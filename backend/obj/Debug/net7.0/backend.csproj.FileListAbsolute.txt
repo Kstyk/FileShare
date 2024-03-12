@@ -31,3 +31,13 @@ E:\FileShare - projekt asp.net angular\backend\obj\Debug\net7.0\refint\backend.d
 E:\FileShare - projekt asp.net angular\backend\obj\Debug\net7.0\backend.pdb
 E:\FileShare - projekt asp.net angular\backend\obj\Debug\net7.0\backend.genruntimeconfig.cache
 E:\FileShare - projekt asp.net angular\backend\obj\Debug\net7.0\ref\backend.dll
+E:\FileShare - projekt asp.net angular\backend\bin\Debug\net7.0\Microsoft.EntityFrameworkCore.dll
+E:\FileShare - projekt asp.net angular\backend\bin\Debug\net7.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+E:\FileShare - projekt asp.net angular\backend\bin\Debug\net7.0\Microsoft.EntityFrameworkCore.Relational.dll
+E:\FileShare - projekt asp.net angular\backend\bin\Debug\net7.0\Npgsql.dll
+E:\FileShare - projekt asp.net angular\backend\bin\Debug\net7.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
+E:\FileShare - projekt asp.net angular\backend\bin\Debug\net7.0\Humanizer.dll
+E:\FileShare - projekt asp.net angular\backend\bin\Debug\net7.0\Microsoft.EntityFrameworkCore.Design.dll
+E:\FileShare - projekt asp.net angular\backend\bin\Debug\net7.0\Microsoft.Extensions.DependencyModel.dll
+E:\FileShare - projekt asp.net angular\backend\bin\Debug\net7.0\Mono.TextTemplating.dll
+E:\FileShare - projekt asp.net angular\backend\bin\Debug\net7.0\System.CodeDom.dll
