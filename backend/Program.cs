@@ -18,6 +18,18 @@ builder.Services.AddDbContextPool<FileShareDbContext>(options =>
 
 builder.Services.AddHttpContextAccessor();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(
+        "FrontendClient", builder =>
+            {
+                builder.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:4200");
+            }
+        );
+});
+
+builder.Services.
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "J+ahQLga6drZBllclqWBizBsIq2a9WRbttqsDW7CeUg3+JjvJKORT2N+OQXVijJ+jeMaeRbR2bqhtJBZzOW+DA==",
+  "dgSpecHash": "e46+URXQ0KxxwsR7VbYV88nksDZLT1YMWpn13JVZJt1eNSPiiJELnEOxe3f4qEKz3SrDnDsyfgZpr/P7cEJsNg==",
   "success": true,
   "projectFilePath": "E:\\FileShare - projekt asp.net angular\\backend\\backend.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Dominik\\.nuget\\packages\\fluentvalidation\\11.9.0\\fluentvalidation.11.9.0.nupkg.sha512",
     "C:\\Users\\Dominik\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Dominik\\.nuget\\packages\\microsoft.aspnetcore.openapi\\7.0.12\\microsoft.aspnetcore.openapi.7.0.12.nupkg.sha512",
     "C:\\Users\\Dominik\\.nuget\\packages\\microsoft.entityframeworkcore\\7.0.12\\microsoft.entityframeworkcore.7.0.12.nupkg.sha512",
