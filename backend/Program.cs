@@ -1,8 +1,10 @@
 using backend;
 using backend.Entities;
 using backend.Models;
+using backend.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,7 +17,6 @@ builder.Services.AddSingleton(authenticationSettings);
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -42,6 +43,11 @@ builder.Services.AddCors(options =>
             }
         );
 });
+
+// My Services
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 
 var app = builder.Build();
