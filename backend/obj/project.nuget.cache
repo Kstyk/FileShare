@@ -1,10 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "e46+URXQ0KxxwsR7VbYV88nksDZLT1YMWpn13JVZJt1eNSPiiJELnEOxe3f4qEKz3SrDnDsyfgZpr/P7cEJsNg==",
+  "dgSpecHash": "sSclzraEthFzdQny1ajxg+3rtbyVjNuZBr6rM9e40nd+Rvu+Hj/LAcqSKvM0tPG9kxu59x9WZBF+XMd+Wosx+w==",
   "success": true,
   "projectFilePath": "E:\\FileShare - projekt asp.net angular\\backend\\backend.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Dominik\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
     "C:\\Users\\Dominik\\.nuget\\packages\\fluentvalidation\\11.9.0\\fluentvalidation.11.9.0.nupkg.sha512",
+    "C:\\Users\\Dominik\\.nuget\\packages\\fluentvalidation.aspnetcore\\11.3.0\\fluentvalidation.aspnetcore.11.3.0.nupkg.sha512",
+    "C:\\Users\\Dominik\\.nuget\\packages\\fluentvalidation.dependencyinjectionextensions\\11.5.1\\fluentvalidation.dependencyinjectionextensions.11.5.1.nupkg.sha512",
     "C:\\Users\\Dominik\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Dominik\\.nuget\\packages\\microsoft.aspnetcore.openapi\\7.0.12\\microsoft.aspnetcore.openapi.7.0.12.nupkg.sha512",
     "C:\\Users\\Dominik\\.nuget\\packages\\microsoft.entityframeworkcore\\7.0.12\\microsoft.entityframeworkcore.7.0.12.nupkg.sha512",

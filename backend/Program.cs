@@ -1,7 +1,16 @@
+using backend;
 using backend.Entities;
+using backend.Models;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var authenticationSettings = new AuthenticationSettings();
+builder.Configuration.GetSection("Authentication").Bind(authenticationSettings);
+builder.Services.AddSingleton(authenticationSettings);
+
 
 // Add services to the container.
 
@@ -17,6 +26,12 @@ builder.Services.AddDbContextPool<FileShareDbContext>(options =>
 });
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+// Validators
+builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
+
 
 builder.Services.AddCors(options =>
 {
@@ -28,7 +43,6 @@ builder.Services.AddCors(options =>
         );
 });
 
-builder.Services.
 
 var app = builder.Build();
 
