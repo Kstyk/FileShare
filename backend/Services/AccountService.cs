@@ -2,6 +2,8 @@
 using backend.Entities;
 using backend.Models;
 using Microsoft.AspNetCore.Identity;
+using System.Diagnostics.SymbolStore;
+using System.Security.Claims;
 
 namespace backend.Services
 {
@@ -33,6 +35,35 @@ namespace backend.Services
             newUser.Password = hashedPassword;
             _dbContext.Users.Add(newUser);
             _dbContext.SaveChanges();
+        }
+
+        public string LoginUser(LoginUserDto dto)
+        {
+            var user = _dbContext.Users
+                .FirstOrDefault(u => u.Email == dto.Email);
+
+            if(user is null)
+            {
+                throw new Exception();
+            }
+
+            var result = _passwordHasher.VerifyHashedPassword(user, user.Password, dto.Password);
+
+            if(result == PasswordVerificationResult.Failed)
+            {
+                throw new Exception();
+            }
+
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim("Id", $"{user.Id}"),
+                new Claim("Email", $"{user.Email}"),
+                new Claim("FirstName", $"{user.FirstName}"),
+                new Claim("LastName", $"{user.LastName}")
+            };
+
+           
         }
 
     }
