@@ -63,7 +63,7 @@ namespace backend.Services
                 new Claim("LastName", $"{user.LastName}")
             };
 
-           
+            return "";
         }
 
     }

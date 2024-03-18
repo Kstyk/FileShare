@@ -21,6 +21,7 @@ namespace backend.Controllers
             return Ok();
         }
 
+        [HttpPost("login")]
         public ActionResult LoginUser([FromBody] LoginUserDto dto)
         {
             try
