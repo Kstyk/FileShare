@@ -4,6 +4,10 @@ using backend.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Diagnostics.SymbolStore;
 using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+
 
 namespace backend.Services
 {
@@ -42,14 +46,14 @@ namespace backend.Services
             var user = _dbContext.Users
                 .FirstOrDefault(u => u.Email == dto.Email);
 
-            if(user is null)
+            if (user is null)
             {
                 throw new Exception();
             }
 
             var result = _passwordHasher.VerifyHashedPassword(user, user.Password, dto.Password);
 
-            if(result == PasswordVerificationResult.Failed)
+            if (result == PasswordVerificationResult.Failed)
             {
                 throw new Exception();
             }
@@ -62,6 +66,9 @@ namespace backend.Services
                 new Claim("FirstName", $"{user.FirstName}"),
                 new Claim("LastName", $"{user.LastName}")
             };
+
+            var key = new SymetricSecurityKey(HeaderEncodingSelector.UTF8.GetBytes(_authenticationSettings.JwtKey));
+
 
             return "";
         }
