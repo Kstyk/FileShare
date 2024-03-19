@@ -1,4 +1,5 @@
 ﻿using backend.Models;
+using backend.Models.Responses;
 using backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,11 +27,34 @@ namespace backend.Controllers
         {
             try
             {
-                string token = _accountService.LoginUser(dto);
-                return Ok(token);
+                LoginResponseDto tokens = _accountService.LoginUser(dto);
+                return Ok(tokens);
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.InnerException?.Message);
+                return BadRequest(ex.Message);
+            } 
+        }
+
+        [HttpPost("refresh-token")]
+        public ActionResult RefreshToken([FromBody] RefreshTokenDto refreshTokenDto)
+        {
+            try
+            {
+                var newAccessToken = _accountService.RefreshAccessToken(refreshTokenDto.RefreshToken);
+                return Ok(newAccessToken);
             } catch(Exception ex)
             {
-                return Unauthorized("Niepoprawne dane logowania");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.InnerException?.Message);
+                return BadRequest(ex.Message);
             }
         }
     }
