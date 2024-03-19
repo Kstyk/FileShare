@@ -1,12 +1,22 @@
+using backend;
 using backend.Entities;
+using backend.Models;
+using backend.Services;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var authenticationSettings = new AuthenticationSettings();
+builder.Configuration.GetSection("Authentication").Bind(authenticationSettings);
+builder.Services.AddSingleton(authenticationSettings);
+
+
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -17,6 +27,29 @@ builder.Services.AddDbContextPool<FileShareDbContext>(options =>
 });
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+// Validators
+builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
+builder.Services.AddScoped<IValidator<LoginUserDto>, LoginUserDtoValidator>();
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(
+        "FrontendClient", builder =>
+            {
+                builder.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:4200");
+            }
+        );
+});
+
+// My Services
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+
 
 var app = builder.Build();
 
