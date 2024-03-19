@@ -26,10 +26,11 @@ namespace backend.Controllers
         {
             try
             {
-                return Ok();
+                string token = _accountService.LoginUser(dto);
+                return Ok(token);
             } catch(Exception ex)
             {
-                return Unauthorized(ex);
+                return Unauthorized("Niepoprawne dane logowania");
             }
         }
     }

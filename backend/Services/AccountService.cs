@@ -2,11 +2,12 @@
 using backend.Entities;
 using backend.Models;
 using Microsoft.AspNetCore.Identity;
-using System.Diagnostics.SymbolStore;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using System.Diagnostics.SymbolStore;
+using System.IdentityModel.Tokens.Jwt;
+using System.Runtime;
+using System.Security.Claims;
+using System.Text;
 
 
 namespace backend.Services
@@ -14,6 +15,7 @@ namespace backend.Services
     public interface IAccountService
     {
         void RegisterUser(RegisterUserDto dto);
+        string LoginUser(LoginUserDto dto);
     }
 
     public class AccountService : IAccountService
@@ -67,10 +69,15 @@ namespace backend.Services
                 new Claim("LastName", $"{user.LastName}")
             };
 
-            var key = new SymetricSecurityKey(HeaderEncodingSelector.UTF8.GetBytes(_authenticationSettings.JwtKey));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationSettings.JwtKey));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expires = DateTime.Now.AddDays(_authenticationSettings.JwtExpireDays);
 
+            var token = new JwtSecurityToken(_authenticationSettings.JwtIssuer, _authenticationSettings.JwtIssuer, claims, expires: expires, signingCredentials: credentials);
 
-            return "";
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            return tokenHandler.WriteToken(token);
         }
 
     }
