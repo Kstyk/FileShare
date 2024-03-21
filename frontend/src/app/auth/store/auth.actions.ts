@@ -4,6 +4,7 @@ export const LOGIN_START = '[Auth] Login Start';
 export const AUTHENTICATE_SUCCESS = '[Auth] Login';
 export const AUTHENTICATE_FAIL = '[Auth] Login Fail';
 export const CLEAR_ERROR = '[Auth] Clear Error';
+export const LOGOUT = '[Auth] Logout';
 
 export const loginStart = createAction(
   LOGIN_START,
@@ -30,3 +31,4 @@ export const authenticateFail = createAction(
   props<{ payload: string }>()
 );
 export const clearError = createAction(CLEAR_ERROR);
+export const logout = createAction(LOGOUT);

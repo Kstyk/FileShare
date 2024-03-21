@@ -4,12 +4,14 @@ import {
   authenticateFail,
   authenticatesuccess,
   loginStart,
+  logout,
 } from './auth.actions';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
+import { AutoLogoutService } from '../auto-logout.service';
 
 export type AuthResponseData = {
   accessToken: string;
@@ -77,12 +79,13 @@ const handleError = (errorRes: any) => {
 export class AuthEffects {
   constructor(
     private http: HttpClient,
-    private action$: Actions,
-    private router: Router
+    private actions$: Actions,
+    private router: Router,
+    private autoLogoutService: AutoLogoutService
   ) {}
 
   authLogin = createEffect(() =>
-    this.action$.pipe(
+    this.actions$.pipe(
       ofType(loginStart),
       switchMap((authData) => {
         return this.http
@@ -92,8 +95,8 @@ export class AuthEffects {
           })
           .pipe(
             tap((resData) => {
-              // this.authService.setLogoutTimer(+resData.expiresIn); // to see if it is working
-              // this.authService.setLogoutTimer(+resData.expiresIn * 1000);
+              const expiresIn = this.calculateExpiresIn(resData.accessToken);
+              this.autoLogoutService.setLogoutTimer(+expiresIn * 1000);
             }),
             map((resData) => {
               console.log(resData);
@@ -106,4 +109,42 @@ export class AuthEffects {
       })
     )
   );
+
+  authRedirect = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(authenticatesuccess, logout),
+        ofType(authenticatesuccess),
+        tap((authSuccessAction) => {
+          if (authSuccessAction.payload.redirect) {
+            this.router.navigate(['/']);
+          }
+        })
+      ),
+    { dispatch: false }
+  );
+
+  authLogout = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(logout),
+        tap(() => {
+          this.autoLogoutService.clearLogoutTimer();
+          localStorage.removeItem('userData');
+          this.router.navigate(['/auth']);
+        })
+      ),
+    { dispatch: false }
+  );
+
+  private calculateExpiresIn = (accessToken: string) => {
+    const decodedToken: TokenDecodedType = jwtDecode(accessToken);
+    const expirationTimeInSeconds = decodedToken.exp;
+
+    // Calculate the remaining time until the token expires
+    const currentTimeInSeconds = Math.floor(Date.now() / 1000);
+    const expiresIn = expirationTimeInSeconds - currentTimeInSeconds;
+
+    return expiresIn;
+  };
 }

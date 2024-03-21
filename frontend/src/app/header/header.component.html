@@ -1,12 +1,12 @@
 <div class="navbar bg-base-100">
   <div class="flex-1">
-    <a class="btn btn-ghost text-xl">daisyUI</a>
+    <a class="btn btn-ghost text-xl">FileShare</a>
   </div>
   <div class="flex-none">
     <ul class="menu menu-horizontal px-1">
       <li><a routerLink="/auth" *ngIf="!isAuthenticated">Login</a></li>
       <li><a (click)="onLogout()" *ngIf="isAuthenticated">Logout</a></li>
-
+      <li><a *ngIf="isAuthenticated">{{ user.firstName }} {{ user.lastName }}</a></li>
     </ul>
   </div>
 </div>

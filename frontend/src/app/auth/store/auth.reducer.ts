@@ -5,6 +5,7 @@ import {
   authenticatesuccess,
   clearError,
   loginStart,
+  logout,
 } from './auth.actions';
 
 export type authStateType = {
@@ -46,5 +47,8 @@ export const authReducer = createReducer(
   }),
   on(clearError, (state) => {
     return { ...state, authError: null };
+  }),
+  on(logout, (state) => {
+    return { ...state, user: null };
   })
 );
