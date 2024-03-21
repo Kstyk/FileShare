@@ -63,7 +63,7 @@ namespace backend.Services
 
             if (result == PasswordVerificationResult.Failed)
             {
-                throw new Exception();
+                throw new UnauthorizedAccessException("Niepoprawne dane logowania.");
             }
 
             var accessToken = GenerateAccessToken(user);
