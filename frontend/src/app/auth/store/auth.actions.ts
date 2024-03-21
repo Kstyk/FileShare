@@ -5,6 +5,7 @@ export const AUTHENTICATE_SUCCESS = '[Auth] Login';
 export const AUTHENTICATE_FAIL = '[Auth] Login Fail';
 export const CLEAR_ERROR = '[Auth] Clear Error';
 export const LOGOUT = '[Auth] Logout';
+export const AUTO_LOGIN = '[Auth] Auto Login';
 
 export const loginStart = createAction(
   LOGIN_START,
@@ -20,7 +21,7 @@ export const authenticatesuccess = createAction(
       email: string;
       userId: string;
       token: string;
-      expirationDate: Date;
+      tokenExpirationDate: Date;
       redirect: boolean;
     };
   }>()
@@ -32,3 +33,4 @@ export const authenticateFail = createAction(
 );
 export const clearError = createAction(CLEAR_ERROR);
 export const logout = createAction(LOGOUT);
+export const autoLogin = createAction(AUTO_LOGIN);

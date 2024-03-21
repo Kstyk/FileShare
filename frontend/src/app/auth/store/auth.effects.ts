@@ -3,6 +3,7 @@ import { User } from '../../../models/user.model';
 import {
   authenticateFail,
   authenticatesuccess,
+  autoLogin,
   loginStart,
   logout,
 } from './auth.actions';
@@ -33,9 +34,8 @@ const handleAuthentication = (token: string) => {
   // decoding token
   const decodedToken: TokenDecodedType = jwtDecode(token);
 
-  const expirationDate = new Date(
-    new Date().getTime() + +decodedToken.exp * 1000
-  );
+  const expirationDate = new Date(+decodedToken.exp * 1000);
+
   const user = new User(
     decodedToken.FirstName,
     decodedToken.LastName,
@@ -52,7 +52,7 @@ const handleAuthentication = (token: string) => {
       email: decodedToken.Email,
       userId: decodedToken.Id,
       token: token,
-      expirationDate: expirationDate,
+      tokenExpirationDate: expirationDate,
       redirect: true,
     },
   });
@@ -122,6 +122,58 @@ export class AuthEffects {
         })
       ),
     { dispatch: false }
+  );
+
+  autoLogin = createEffect(() =>
+    this.actions$.pipe(
+      ofType(autoLogin),
+      map(() => {
+        const userData: {
+          firstName: string;
+          lastName: string;
+          email: string;
+          id: string;
+          _token: string;
+          _tokenExpirationDate: string;
+        } = JSON.parse(localStorage.getItem('userData'));
+        if (!userData) {
+          return { type: 'DUMMY' };
+        }
+
+        const loadedUser = new User(
+          userData.firstName,
+          userData.lastName,
+          userData.email,
+          userData.id,
+          userData._token,
+          new Date(userData._tokenExpirationDate)
+        );
+
+        console.log('here');
+        console.log(loadedUser);
+
+        if (loadedUser.token) {
+          // this.user.next(loadedUser);
+          const expirationDuration =
+            new Date(userData._tokenExpirationDate).getTime() -
+            new Date().getTime();
+          this.autoLogoutService.setLogoutTimer(expirationDuration);
+          return authenticatesuccess({
+            payload: {
+              firstName: loadedUser.firstName,
+              lastName: loadedUser.lastName,
+              email: loadedUser.email,
+              userId: loadedUser.id,
+              token: loadedUser.token,
+              tokenExpirationDate: new Date(userData._tokenExpirationDate),
+              redirect: false,
+            },
+          });
+        }
+
+        return { type: 'DUMMY' };
+      })
+    )
   );
 
   authLogout = createEffect(
