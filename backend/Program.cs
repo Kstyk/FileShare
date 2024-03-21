@@ -37,6 +37,15 @@ builder.Services.AddAuthentication(option =>
     };
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendClient", builder =>
+        builder.AllowAnyMethod()
+            .AllowAnyHeader()
+            .WithOrigins("http://localhost:4200")
+            );
+});
+
 
 // Add services to the container.
 
@@ -118,6 +127,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("FrontendClient");
+
 
 app.UseHttpsRedirection();
 
