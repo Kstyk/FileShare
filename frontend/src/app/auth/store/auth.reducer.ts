@@ -6,18 +6,22 @@ import {
   clearError,
   loginStart,
   logout,
+  signupStart,
 } from './auth.actions';
+import { RegisterValidationError } from '../../../models/register-validation-errors.model';
 
 export type authStateType = {
   user: User; // user can be null
   authError: string;
   loading: boolean;
+  registerValidationError: RegisterValidationError;
 };
 
 const initialState: authStateType = {
   user: null,
   authError: null,
   loading: false,
+  registerValidationError: null,
 };
 
 export const authReducer = createReducer(
@@ -41,7 +45,13 @@ export const authReducer = createReducer(
     };
   }),
   on(authenticateFail, (state, action) => {
-    return { ...state, authError: action.payload, user: null, loading: false };
+    return {
+      ...state,
+      authError: action.payload.authError,
+      user: null,
+      loading: false,
+      registerValidationError: action.payload.registerValidationError,
+    };
   }),
   on(loginStart, (state) => {
     return { ...state, authError: null, loading: true };
@@ -51,5 +61,8 @@ export const authReducer = createReducer(
   }),
   on(logout, (state) => {
     return { ...state, user: null };
+  }),
+  on(signupStart, (state) => {
+    return { ...state, authError: null, loading: true };
   })
 );

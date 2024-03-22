@@ -1,1 +1,108 @@
-<p>register works!</p>
+<div
+  class="flex mt-5 w-11/12 sm:w-8/12 flex-col sm:flex-row mx-auto sm:gap-x-2 gap-y-2 sm:gap-y-0"
+>
+  <div
+    class="w-full sm:w-4/12 bg-white shadow-md bg-cover sm:bg-contain max-sm:h-12 relative"
+    style="background-image: url('assets/BG 14.png')"
+  >
+    <div
+      class="absolute inset-0 flex items-center justify-center text-center text-xl font-bold"
+    >
+      <div
+        class="h-12 bg-gray-400 bg-opacity-80 w-full flex items-center justify-center"
+      >
+        Register
+      </div>
+    </div>
+  </div>
+
+  <div class="p-5 flex bg-white w-full phone:w-8/12 m-auto flex-col shadow-md">
+    <h3 class="text-center">Create a new account</h3>
+    <div class="border-b-[1px] border-gray-200 w-full shadow-sm my-2"></div>
+    <!-- <div
+      role="alert"
+      class="alert alert-error w-full sm:w-8/12 my-3"
+      *ngIf="error"
+    >
+    <svg
+      (click)="hideError()"
+      xmlns="http://www.w3.org/2000/svg"
+      class="stroke-current shrink-0 h-6 w-6 cursor-pointer"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
+    </svg>
+    <span>{{ error }}</span>
+  </div> -->
+    <form
+      class="w-full flex flex-col items-center max-sm:h-full"
+      (ngSubmit)="onSubmit()"
+      [formGroup]="registerForm"
+    >
+      <label class="form-control w-full sm:w-8/12">
+        <div class="label">
+          <span class="label-text">First name</span>
+        </div>
+        <input
+          type="text"
+          placeholder="Type your first name here"
+          class="input input-bordered w-full focus:outline-none h-10"
+          formControlName="firstName"
+        />
+      </label>
+      <label class="form-control w-full sm:w-8/12">
+        <div class="label">
+          <span class="label-text">Last name</span>
+        </div>
+        <input
+          type="text"
+          placeholder="Type your last name here"
+          class="input input-bordered w-full focus:outline-none h-10"
+          formControlName="lastName"
+        />
+      </label>
+      <label class="form-control w-full sm:w-8/12">
+        <div class="label">
+          <span class="label-text">Email</span>
+        </div>
+        <input
+          type="text"
+          placeholder="Type email here"
+          class="input input-bordered w-full focus:outline-none h-10"
+          formControlName="email"
+        />
+      </label>
+      <label class="form-control w-full sm:w-8/12">
+        <div class="label">
+          <span class="label-text">Password</span>
+        </div>
+        <input
+          type="password"
+          placeholder="Type password here"
+          class="input input-bordered w-full focus:outline-none h-10"
+          formControlName="password"
+        />
+      </label>
+      <label class="form-control w-full sm:w-8/12">
+        <div class="label">
+          <span class="label-text">Confirm Password</span>
+        </div>
+        <input
+          type="password"
+          placeholder="Type password here"
+          class="input input-bordered w-full focus:outline-none h-10"
+          formControlName="confirmPassword"
+        />
+      </label>
+      <div class="w-full sm:w-8/12 flex flex-row pt-5">
+        <button class="btn btn-neutral" type="submit">Register</button>
+      </div>
+    </form>
+  </div>
+</div>

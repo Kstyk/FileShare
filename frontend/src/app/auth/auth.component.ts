@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 import { Subscription, map } from 'rxjs';
 import { selectAuth } from './store/auth.selector';
 import { clearError, loginStart } from './store/auth.actions';
+import { RegisterValidationError } from '../../models/register-validation-errors.model';
 
 @Component({
   selector: 'app-auth',

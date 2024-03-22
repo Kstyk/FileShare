@@ -6,6 +6,7 @@ import {
   autoLogin,
   loginStart,
   logout,
+  signupStart,
 } from './auth.actions';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -66,15 +67,37 @@ const handleError = (errorRes: any) => {
   console.log(errorRes);
 
   if (!errorRes.error && !errorRes.error.error) {
-    return of(authenticateFail({ payload: errorMessage }));
+    return of(
+      authenticateFail({
+        payload: { authError: errorMessage, registerValidationError: null },
+      })
+    );
   }
   switch (errorRes.status) {
     case 401:
       errorMessage = errorRes.error;
       break;
+    case 400:
+      if (errorRes.error.errors) {
+        return of(
+          authenticateFail({
+            payload: {
+              registerValidationError: errorRes.error.errors,
+              authError: null,
+            },
+          })
+        );
+      }
+      break;
+    default:
+      break;
   }
 
-  return of(authenticateFail({ payload: errorMessage }));
+  return of(
+    authenticateFail({
+      payload: { authError: errorMessage, registerValidationError: null },
+    })
+  );
 };
 
 @Injectable()
@@ -106,6 +129,33 @@ export class AuthEffects {
                 resData.accessToken,
                 resData.refreshToken
               );
+            }),
+            catchError((errorRes) => {
+              return handleError(errorRes);
+            })
+          );
+      })
+    )
+  );
+
+  authSignup = createEffect(() =>
+    this.actions$.pipe(
+      ofType(signupStart),
+      switchMap((authData) => {
+        return this.http
+          .post('https://localhost:7041/api/account/register', {
+            email: authData.payload.email,
+            password: authData.payload.password,
+            confirmPassword: authData.payload.confirmPassword,
+            firstName: authData.payload.firstName,
+            lastName: authData.payload.lastName,
+          })
+          .pipe(
+            map((resData) => {
+              console.log(resData);
+              this.router.navigate(['/auth']);
+
+              return { type: '[Auth] Signup Success' }; // Add this line to return an action
             }),
             catchError((errorRes) => {
               return handleError(errorRes);
