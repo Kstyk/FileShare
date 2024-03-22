@@ -42,6 +42,7 @@ export const authReducer = createReducer(
       authError: null,
       user: user,
       loading: false,
+      registerValidationError: null,
     };
   }),
   on(authenticateFail, (state, action) => {
@@ -57,7 +58,7 @@ export const authReducer = createReducer(
     return { ...state, authError: null, loading: true };
   }),
   on(clearError, (state) => {
-    return { ...state, authError: null };
+    return { ...state, authError: null, registerValidationError: null };
   }),
   on(logout, (state) => {
     return { ...state, user: null };

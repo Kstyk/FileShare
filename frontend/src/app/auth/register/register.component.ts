@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { AppStateType } from '../../store/app.reducer';
-import { signupStart } from '../store/auth.actions';
+import { clearError, signupStart } from '../store/auth.actions';
 import { RegisterValidationError } from '../../../models/register-validation-errors.model';
 import { selectAuth } from '../store/auth.selector';
 
@@ -15,11 +15,13 @@ import { selectAuth } from '../store/auth.selector';
 export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
   errorValidation: RegisterValidationError;
+  error: string;
   private storeSub: Subscription;
 
   ngOnInit() {
     this.storeSub = this.store.select(selectAuth).subscribe((authState) => {
       this.errorValidation = authState.registerValidationError;
+      this.error = authState.authError;
 
       if (this.errorValidation) {
         console.log(this.errorValidation);
@@ -30,7 +32,9 @@ export class RegisterComponent implements OnInit {
 
   constructor(private store: Store<AppStateType>) {}
 
-  hideError() {}
+  hideError() {
+    this.store.dispatch(clearError());
+  }
 
   onSubmit() {
     console.log(this.registerForm.value);
