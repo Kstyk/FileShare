@@ -6,6 +6,7 @@ import {
   autoLogin,
   loginStart,
   logout,
+  refreshToken,
   signupStart,
 } from './auth.actions';
 import { Injectable } from '@angular/core';
@@ -13,7 +14,7 @@ import { HttpClient } from '@angular/common/http';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
-import { AutoLogoutService } from '../auto-logout.service';
+import { RefreshTokenService } from '../refresh-token.service';
 
 export type AuthResponseData = {
   accessToken: string;
@@ -106,7 +107,7 @@ export class AuthEffects {
     private http: HttpClient,
     private actions$: Actions,
     private router: Router,
-    private autoLogoutService: AutoLogoutService
+    private refreshTokenService: RefreshTokenService
   ) {}
 
   authLogin = createEffect(() =>
@@ -121,7 +122,10 @@ export class AuthEffects {
           .pipe(
             tap((resData) => {
               const expiresIn = this.calculateExpiresIn(resData.accessToken);
-              this.autoLogoutService.setLogoutTimer(+expiresIn * 1000);
+              this.refreshTokenService.setRefreshTokenTimer(
+                +expiresIn * 1000,
+                resData.refreshToken
+              );
             }),
             map((resData) => {
               console.log(resData);
@@ -152,7 +156,6 @@ export class AuthEffects {
           })
           .pipe(
             map((resData) => {
-              console.log(resData);
               this.router.navigate(['/auth']);
 
               return { type: '[Auth] Signup Success' }; // Add this line to return an action
@@ -164,6 +167,43 @@ export class AuthEffects {
       })
     )
   );
+
+  refreshToken = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(refreshToken),
+      switchMap((authData) => {
+        console.log('here');
+        return this.http
+          .post<{ accessToken: string }>(
+            'https://localhost:7041/api/account/refresh-token',
+            {
+              refreshToken: authData.payload.refreshToken,
+            }
+          )
+          .pipe(
+            tap((resData) => {
+              if (resData) {
+                const expiresIn = this.calculateExpiresIn(resData.accessToken);
+                this.refreshTokenService.setRefreshTokenTimer(
+                  +expiresIn * 1000,
+                  authData.payload.refreshToken
+                );
+              }
+            }),
+            map((resData) => {
+              return handleAuthentication(
+                resData.accessToken,
+                authData.payload.refreshToken
+              );
+            }),
+            catchError((errorRes) => {
+              console.log(errorRes);
+              return handleError(errorRes);
+            })
+          );
+      })
+    );
+  });
 
   authRedirect = createEffect(
     () =>
@@ -206,15 +246,15 @@ export class AuthEffects {
           userData._refreshToken
         );
 
-        console.log('here');
-        console.log(loadedUser);
-
-        if (loadedUser.token) {
+        if (loadedUser && loadedUser.token) {
           // this.user.next(loadedUser);
           const expirationDuration =
             new Date(userData._tokenExpirationDate).getTime() -
             new Date().getTime();
-          this.autoLogoutService.setLogoutTimer(expirationDuration);
+          this.refreshTokenService.setRefreshTokenTimer(
+            expirationDuration,
+            userData._refreshToken
+          );
           return authenticatesuccess({
             payload: {
               firstName: loadedUser.firstName,
@@ -224,7 +264,7 @@ export class AuthEffects {
               token: loadedUser.token,
               tokenExpirationDate: new Date(userData._tokenExpirationDate),
               redirect: false,
-              refreshToken: userData._refreshToken,
+              refreshToken: loadedUser.refreshToken,
             },
           });
         }
@@ -239,7 +279,7 @@ export class AuthEffects {
       this.actions$.pipe(
         ofType(logout),
         tap(() => {
-          this.autoLogoutService.clearLogoutTimer();
+          this.refreshTokenService.clearRefreshTokenTimer();
           localStorage.removeItem('userData');
           this.router.navigate(['/auth']);
         })

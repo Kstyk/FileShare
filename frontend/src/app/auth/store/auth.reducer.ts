@@ -6,6 +6,7 @@ import {
   clearError,
   loginStart,
   logout,
+  refreshToken,
   signupStart,
 } from './auth.actions';
 import { RegisterValidationError } from '../../../models/register-validation-errors.model';
@@ -65,5 +66,8 @@ export const authReducer = createReducer(
   }),
   on(signupStart, (state) => {
     return { ...state, authError: null, loading: true };
+  }),
+  on(refreshToken, (state) => {
+    return { ...state };
   })
 );

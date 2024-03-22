@@ -8,6 +8,7 @@ export const CLEAR_ERROR = '[Auth] Clear Error';
 export const LOGOUT = '[Auth] Logout';
 export const AUTO_LOGIN = '[Auth] Auto Login';
 export const SIGNUP_START = '[Auth] Signup Start';
+export const REFRESH_TOKEN = '[Auth] Refresh Token';
 
 export const loginStart = createAction(
   LOGIN_START,
@@ -53,4 +54,8 @@ export const signupStart = createAction(
       confirmPassword: string;
     };
   }>()
+);
+export const refreshToken = createAction(
+  REFRESH_TOKEN,
+  props<{ payload: { refreshToken: string } }>()
 );

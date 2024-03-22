@@ -1,21 +1,21 @@
 import { Store } from '@ngrx/store';
 import { AppStateType } from '../store/app.reducer';
 import { Injectable } from '@angular/core';
-import { logout } from './store/auth.actions';
+import { refreshToken } from './store/auth.actions';
 
 @Injectable({ providedIn: 'root' })
-export class AutoLogoutService {
+export class RefreshTokenService {
   private tokenExpirationTimer: any;
 
   constructor(private store: Store<AppStateType>) {}
 
-  setLogoutTimer(expirationDuration: number) {
+  setRefreshTokenTimer(expirationDuration: number, token: string) {
     this.tokenExpirationTimer = setTimeout(() => {
-      this.store.dispatch(logout());
+      this.store.dispatch(refreshToken({ payload: { refreshToken: token } }));
     }, expirationDuration);
   }
 
-  clearLogoutTimer() {
+  clearRefreshTokenTimer() {
     if (this.tokenExpirationTimer) {
       clearTimeout(this.tokenExpirationTimer);
       this.tokenExpirationTimer = null;
