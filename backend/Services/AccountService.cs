@@ -67,10 +67,30 @@ namespace backend.Services
             }
 
             var accessToken = GenerateAccessToken(user);
-            var refreshToken = GenerateRefreshToken();
 
-            SaveRefreshToken(user.Id, refreshToken);
+            var existingRefreshToken = _dbContext.RefreshTokens.FirstOrDefault(rt => rt.UserId == user.Id);
+            var refreshToken = "";
 
+            if (existingRefreshToken == null)
+            {
+                refreshToken = GenerateRefreshToken();
+                SaveRefreshToken(user.Id, refreshToken);
+            } else
+            {
+                if (existingRefreshToken.Expires < DateTime.UtcNow)
+                {
+                    _dbContext.RefreshTokens.Remove(existingRefreshToken);
+                    _dbContext.SaveChanges();
+
+                    refreshToken = GenerateRefreshToken();
+                    SaveRefreshToken(user.Id, refreshToken);
+                } else
+                {
+                    refreshToken = existingRefreshToken.Token;
+                }
+
+                
+            }
             return new LoginResponseDto(accessToken, refreshToken);
         }
 
@@ -98,7 +118,7 @@ namespace backend.Services
 
         private string GenerateRefreshToken()
         {
-            var randomNumber = new byte[32];
+            var randomNumber = new byte[128];
             using (var rng = RandomNumberGenerator.Create())
             {
                 rng.GetBytes(randomNumber);
@@ -112,34 +132,28 @@ namespace backend.Services
             var token = new RefreshToken();
             token.UserId = userId;
             token.Token = refreshToken;
-            token.Expires = DateTime.UtcNow.AddDays(_authenticationSettings.JwtRefreshExpiresDays);
+            token.Expires = DateTime.UtcNow.AddMinutes(_authenticationSettings.JwtRefreshExpiresDays);
 
             _dbContext.RefreshTokens.Add(token);
             _dbContext.SaveChanges();
         }
 
         public string RefreshAccessToken(string refreshToken) {
-            var userId = _userContextService.GetUserId;
-
-            if (!userId.HasValue)
-            {
-                throw new Exception("Użytkownik nie istnieje.");
-            }
-
-            var userIdValue = userId.Value;
-
-            var refreshTokenDb = _dbContext.RefreshTokens.FirstOrDefault(rt => rt.UserId == userIdValue && rt.Expires > DateTime.UtcNow && rt.Token.Equals(refreshToken));
+            var refreshTokenDb = _dbContext.RefreshTokens.FirstOrDefault(rt => rt.Token.Equals(refreshToken) && rt.Expires > DateTime.UtcNow);
 
             if (refreshTokenDb == null)
             {
                 // Wyloguj użytkownika po stronie frontendu
-                throw new Exception("Refresh token wygasł.");
+                throw new Exception("Refresh token expired.");
             }
 
-            var user = _dbContext.Users.FirstOrDefault(x => x.Id == userIdValue);
+            var user = _dbContext.Users.FirstOrDefault(x => x.Id == refreshTokenDb.UserId);
 
+            if (user == null)
+            {
+                throw new Exception("An error during the process of refreshing token.");
+            }
             
-
             var newAccessToken = GenerateAccessToken(user);
 
             if (newAccessToken != null)
@@ -147,7 +161,7 @@ namespace backend.Services
                 return newAccessToken;
             } else
             {
-                throw new Exception("Błąd w odświeżaniu tokena.");
+                throw new Exception("An error during the process of refreshing token.");
             }
         }
 
