@@ -30,7 +30,7 @@ export type TokenDecodedType = {
   aud: string;
 };
 
-const handleAuthentication = (token: string) => {
+const handleAuthentication = (token: string, refreshToken: string) => {
   // decoding token
   const decodedToken: TokenDecodedType = jwtDecode(token);
 
@@ -42,7 +42,8 @@ const handleAuthentication = (token: string) => {
     decodedToken.Email,
     decodedToken.Id,
     token,
-    expirationDate
+    expirationDate,
+    refreshToken
   );
   localStorage.setItem('userData', JSON.stringify(user));
   return authenticatesuccess({
@@ -54,6 +55,7 @@ const handleAuthentication = (token: string) => {
       token: token,
       tokenExpirationDate: expirationDate,
       redirect: true,
+      refreshToken: refreshToken,
     },
   });
 };
@@ -100,7 +102,10 @@ export class AuthEffects {
             }),
             map((resData) => {
               console.log(resData);
-              return handleAuthentication(resData.accessToken);
+              return handleAuthentication(
+                resData.accessToken,
+                resData.refreshToken
+              );
             }),
             catchError((errorRes) => {
               return handleError(errorRes);
@@ -135,6 +140,7 @@ export class AuthEffects {
           id: string;
           _token: string;
           _tokenExpirationDate: string;
+          _refreshToken: string;
         } = JSON.parse(localStorage.getItem('userData'));
         if (!userData) {
           return { type: 'DUMMY' };
@@ -146,7 +152,8 @@ export class AuthEffects {
           userData.email,
           userData.id,
           userData._token,
-          new Date(userData._tokenExpirationDate)
+          new Date(userData._tokenExpirationDate),
+          userData._refreshToken
         );
 
         console.log('here');
@@ -167,6 +174,7 @@ export class AuthEffects {
               token: loadedUser.token,
               tokenExpirationDate: new Date(userData._tokenExpirationDate),
               redirect: false,
+              refreshToken: userData._refreshToken,
             },
           });
         }

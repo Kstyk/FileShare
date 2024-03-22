@@ -23,6 +23,7 @@ export const authenticatesuccess = createAction(
       token: string;
       tokenExpirationDate: Date;
       redirect: boolean;
+      refreshToken: string;
     };
   }>()
 );
