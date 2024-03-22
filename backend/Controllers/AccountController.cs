@@ -44,7 +44,7 @@ namespace backend.Controllers
         }
 
         [HttpPost("refresh-token")]
-        public ActionResult RefreshToken([FromBody] RefreshTokenDto refreshTokenDto)
+        public ActionResult<RefreshTokenResponseDto> RefreshToken([FromBody] RefreshTokenDto refreshTokenDto)
         {
             try
             {

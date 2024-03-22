@@ -19,7 +19,7 @@ namespace backend.Services
     {
         void RegisterUser(RegisterUserDto dto);
         LoginResponseDto LoginUser(LoginUserDto dto);
-        string RefreshAccessToken(string refreshToken);
+        RefreshTokenResponseDto RefreshAccessToken(string refreshToken);
     }
 
     public class AccountService : IAccountService
@@ -132,13 +132,13 @@ namespace backend.Services
             var token = new RefreshToken();
             token.UserId = userId;
             token.Token = refreshToken;
-            token.Expires = DateTime.UtcNow.AddMinutes(_authenticationSettings.JwtRefreshExpiresDays);
+            token.Expires = DateTime.UtcNow.AddDays(_authenticationSettings.JwtRefreshExpiresDays);
 
             _dbContext.RefreshTokens.Add(token);
             _dbContext.SaveChanges();
         }
 
-        public string RefreshAccessToken(string refreshToken) {
+        public RefreshTokenResponseDto RefreshAccessToken(string refreshToken) {
             var refreshTokenDb = _dbContext.RefreshTokens.FirstOrDefault(rt => rt.Token.Equals(refreshToken) && rt.Expires > DateTime.UtcNow);
 
             if (refreshTokenDb == null)
@@ -158,7 +158,7 @@ namespace backend.Services
 
             if (newAccessToken != null)
             {
-                return newAccessToken;
+                return new RefreshTokenResponseDto() { AccessToken = newAccessToken };
             } else
             {
                 throw new Exception("An error during the process of refreshing token.");
