@@ -1,4 +1,6 @@
-﻿using FluentValidation;
+﻿using backend.Entities;
+using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Models
 {
@@ -13,10 +15,20 @@ namespace backend.Models
 
     public class RegisterUserDtoValidator : AbstractValidator<RegisterUserDto>
     {
-        public RegisterUserDtoValidator()
+        public RegisterUserDtoValidator(FileShareDbContext dbContext)
         {
+
+            // Add rule for email to be unique
             RuleFor(x => x.Email).EmailAddress().WithMessage("Niepoprawny format adresu e-mail")
-                    .NotEmpty().WithMessage("Nie podano żadnej wartości.");
+                    .NotEmpty().WithMessage("Nie podano żadnej wartości.").Custom((value, context) =>
+                    {
+                        bool emailInUse = dbContext.Users.Any(u => u.Email == value);
+
+                        if (emailInUse)
+                        {
+                            context.AddFailure("Email", "Ten email istnieje w naszej bazie.");
+                        }
+                    });
 
             RuleFor(x => x.FirstName).NotNull().NotEmpty().WithMessage("Musisz podać imię.")
                     .MaximumLength(50).WithMessage("Podana wartość nie może być dłuższa niż 50 znaków.");

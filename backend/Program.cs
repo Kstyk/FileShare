@@ -100,7 +100,7 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 // Validators
 builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
 builder.Services.AddScoped<IValidator<LoginUserDto>, LoginUserDtoValidator>();
-
+builder.Services.AddScoped<IValidator<RefreshTokenDto>, RefreshTokenDtoValidator>();
 
 builder.Services.AddCors(options =>
 {
