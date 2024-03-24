@@ -19,8 +19,8 @@ namespace backend.Entities
 
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Files)
-                .WithOne(f => f.User)
-                .HasForeignKey(f => f.UserId);
+                .WithOne(f => f.Owner)
+                .HasForeignKey(f => f.OwnerId);
 
             // Add validation to other USer fields
             modelBuilder.Entity<User>()
@@ -57,7 +57,7 @@ namespace backend.Entities
                 .IsRequired();
 
             modelBuilder.Entity<File>()
-                .Property(f => f.UserId)
+                .Property(f => f.OwnerId)
                 .IsRequired();
 
             modelBuilder.Entity<File>()
