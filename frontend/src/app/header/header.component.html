@@ -4,14 +4,18 @@
   </div>
   <div class="flex-none">
     <ul class="menu menu-horizontal px-1">
+      @if (!isAuthenticated) {
       <li>
         <a routerLink="/auth/register" *ngIf="!isAuthenticated">Register</a>
       </li>
       <li><a routerLink="/auth" *ngIf="!isAuthenticated">Login</a></li>
-      <li><a (click)="onLogout()" *ngIf="isAuthenticated">Logout</a></li>
+      } @if (isAuthenticated) {
+      <li><a routerLink="/files/upload">Upload Files</a></li>
+      <li><a (click)="onLogout()">Logout</a></li>
       <li>
-        <a *ngIf="isAuthenticated">{{ user.firstName }} {{ user.lastName }}</a>
+        <a>{{ user.firstName }} {{ user.lastName }}</a>
       </li>
+      }
     </ul>
   </div>
 </div>

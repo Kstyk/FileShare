@@ -1,0 +1,44 @@
+<div class="flex mt-5 w-11/12 sm:w-8/12 flex-col sm:flex-row mx-auto">
+  <div class="mt-10 rounded-md bg-white p-6 shadow-xl w-full">
+    <form
+      class="mx-auto min-h-[60vh] flex w-full flex-col items-center space-y-4 max-md:w-full phone:h-full"
+      (ngSubmit)="onSubmit()"
+      [formGroup]="uploadFileForm"
+    >
+      <div class="file-input-container">
+        <input
+          type="file"
+          id="files"
+          multiple
+          name="files"
+          formControlName="file"
+        />
+
+        <label htmlFor="files" class="custom-file-button">
+          <span
+            class="text-xl font-bold uppercase tracking-wide phone:text-2xl"
+          >
+            Wybierz pliki
+          </span>
+          <span class="hidden phone:flex phone:flex-col phone:items-center">
+            <span class="text-sm uppercase text-slate-700">lub</span>
+            <span
+              class="text-lg font-bold uppercase tracking-wide phone:text-xl"
+            >
+              Przeciągnij je tutaj
+            </span>
+          </span>
+        </label>
+      </div>
+      <div class="w-full sm:w-full flex flex-row pt-5">
+        <button
+          class="btn btn-neutral"
+          type="submit"
+          [disabled]="!uploadFileForm.valid"
+        >
+          Upload
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
