@@ -17,11 +17,11 @@ namespace backend.Controllers
         
 
         [HttpPost("upload")]
-        public async Task<IActionResult> UploadFile([FromForm] IFormFile File)
+        public async Task<IActionResult> UploadFile([FromForm] IFormFile file)
         {
             try
             {
-                var filePath = await _fileService.UploadFileAsync(File);
+                var filePath = await _fileService.UploadFileAsync(file);
                 return Ok(filePath);
             }
             catch (UnauthorizedAccessException ex)

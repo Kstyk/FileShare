@@ -19,10 +19,10 @@ namespace backend.Services
             _userContextService = userContextService;
         }
 
-        public async Task<string> UploadFileAsync(IFormFile File)
+        public async Task<string> UploadFileAsync(IFormFile file)
         {
             // 1. Check if file is not empty
-            if (File == null || File.Length == 0)
+            if (file == null || file.Length == 0)
             {
                 throw new Exception("File is empty");
             }
@@ -38,19 +38,19 @@ namespace backend.Services
             // 3. Create a new file entity
             var fileEntity = new backend.Entities.File
             {
-                Name = File.FileName,
+                Name = file.FileName,
                 OwnerId = userId.Value,
                 UploadedAt = DateTime.UtcNow
             };
 
             // 4. Generate unique file name
-            var filePath = Guid.NewGuid().ToString() + "_" + File.FileName;
+            var filePath = Guid.NewGuid().ToString() + "_" + file.FileName;
             var path = Path.Combine(Directory.GetCurrentDirectory(), "Files", filePath);
 
             // 5. Save the file to disk
             using (var stream = new FileStream(path, FileMode.Create))
             {
-                await File.CopyToAsync(stream);
+                await file.CopyToAsync(stream);
             }
 
             // 6. Save the file path to the database
