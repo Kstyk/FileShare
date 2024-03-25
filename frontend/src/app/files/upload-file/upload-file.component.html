@@ -8,10 +8,11 @@
       <div class="file-input-container">
         <input
           type="file"
-          id="files"
-          multiple
-          name="files"
+          id="file"
+          multiple="true"
+          name="file"
           formControlName="file"
+          (change)="onChangeFiles($event)"
         />
 
         <label htmlFor="files" class="custom-file-button">
@@ -29,6 +30,12 @@
             </span>
           </span>
         </label>
+      </div>
+      <div *ngIf="uploadFileForm.get('file').value" class="mt-3">
+        <p>Wybrane pliki:</p>
+        <ul>
+          <li *ngFor="let file of filesArray">{{ file.name }}</li>
+        </ul>
       </div>
       <div class="w-full sm:w-full flex flex-row pt-5">
         <button

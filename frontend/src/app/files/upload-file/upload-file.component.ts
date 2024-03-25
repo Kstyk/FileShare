@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Store } from '@ngrx/store';
+import { AppStateType } from '../../store/app.reducer';
+import { uploadStart } from '../store/files.actions';
 
 @Component({
   selector: 'app-upload-file',
@@ -8,20 +11,35 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 })
 export class UploadFileComponent implements OnInit {
   uploadFileForm: FormGroup;
+  filesArray: File[];
 
-  constructor() {}
+  constructor(private store: Store<AppStateType>) {}
 
   ngOnInit(): void {
     this.initForm();
   }
 
   onSubmit() {
-    console.log(this.uploadFileForm.value);
+    if (
+      this.uploadFileForm.valid &&
+      this.filesArray &&
+      this.filesArray.length > 0
+    ) {
+      const fileToUpload = this.filesArray[0];
+      // Perform any additional validation or processing if needed
+
+      // Dispatch the uploadStart action with the file payload
+      this.store.dispatch(uploadStart({ payload: { file: fileToUpload } }));
+    }
+  }
+
+  onChangeFiles(event: any) {
+    this.filesArray = event.target.files;
   }
 
   private initForm() {
     this.uploadFileForm = new FormGroup({
-      file: new FormControl(null, [Validators.required]),
+      file: new FormControl([], [Validators.required]),
     });
   }
 }

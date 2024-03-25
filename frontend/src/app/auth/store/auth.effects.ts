@@ -64,8 +64,6 @@ const handleAuthentication = (token: string, refreshToken: string) => {
 
 const handleError = (errorRes: any) => {
   let errorMessage = 'An unknown error occurred!';
-  console.log('Treść błędu:');
-  console.log(errorRes);
 
   if (!errorRes.error && !errorRes.error.error) {
     return of(
@@ -113,6 +111,7 @@ export class AuthEffects {
   authLogin = createEffect(() =>
     this.actions$.pipe(
       ofType(loginStart),
+
       switchMap((authData) => {
         return this.http
           .post<AuthResponseData>('https://localhost:7041/api/account/login', {
