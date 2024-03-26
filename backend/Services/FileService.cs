@@ -1,6 +1,7 @@
 ﻿using backend.Entities;
 using backend.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services
 {
@@ -8,6 +9,8 @@ namespace backend.Services
     {
         Task<string> UploadFileAsync(IFormFile file);
         Task<string[]> UploadFilesAsync(IFormFile[] files);
+        Task<IEnumerable<FileModelDto>> GetAllFilesAsync();
+        Task DeleteFileAsync(int fileId);
     }
 
     public class FileService : IFileService
@@ -110,7 +113,7 @@ namespace backend.Services
         }
 
         // Create an method which will return all files of logged user
-        public async Task<IEnumerable<FileModel>> GetAllFilesAsync()
+        public async Task<IEnumerable<FileModelDto>> GetAllFilesAsync()
         {
             var userId = _userContextService.GetUserId;
 
@@ -120,19 +123,41 @@ namespace backend.Services
             }
 
             var files = await _dbContext.Files
-                .Where(file => file.OwnerId == userId)
-                .Select(file => new FileModel
+                .Where(f => f.OwnerId == userId)
+                .Select(f => new FileModelDto
                 {
-                    Id = file.Id,
-                    Name = file.Name,
-                    UploadedAt = file.UploadedAt
+                    Id = f.Id,
+                    Name = f.Name,
+                    Path = f.Path,
+                    UploadedAt = f.UploadedAt
                 })
                 .ToListAsync();
 
             return files;
         }
+        
+        // Delete file by id
+        public async Task DeleteFileAsync(int fileId)
+        {
+            var userId = _userContextService.GetUserId;
 
+            if (userId == null)
+            {
+                throw new UnauthorizedAccessException("User is not authenticated");
+            }
 
+            var file = await _dbContext.Files
+                .Where(f => f.OwnerId == userId && f.Id == fileId)
+                .FirstOrDefaultAsync();
+
+            if (file == null)
+            {
+                throw new Exception("File not found");
+            }
+
+            _dbContext.Files.Remove(file);
+            await _dbContext.SaveChangesAsync();
+        }
 
     }
 }
