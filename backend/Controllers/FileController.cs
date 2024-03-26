@@ -85,5 +85,47 @@ namespace backend.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("{fileId}")]
+        public async Task<IActionResult> GetFile(int fileId)
+        {
+            try
+            {
+                var file = await _fileService.GetFileByIdAsync(fileId);
+                return Ok(file);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("download/{fileId}")]
+        public async Task<IActionResult> DownloadFile(int fileId)
+        {
+            try
+            {
+                var file = await _fileService.GetFileByIdAsync(fileId);
+                var memory = new MemoryStream();
+                using (var stream = new FileStream(file.Path, FileMode.Open))
+                {
+                    await stream.CopyToAsync(memory);
+                }
+                memory.Position = 0;
+                return File(memory, "application/octet-stream", file.Name);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

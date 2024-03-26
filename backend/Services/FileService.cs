@@ -11,6 +11,8 @@ namespace backend.Services
         Task<string[]> UploadFilesAsync(IFormFile[] files);
         Task<IEnumerable<FileModelDto>> GetAllFilesAsync();
         Task DeleteFileAsync(int fileId);
+        Task<FileModelDto> GetFileByIdAsync(int fileId);
+        Task<FileStream> DownloadFileAsync(int fileId);
     }
 
     public class FileService : IFileService
@@ -158,6 +160,58 @@ namespace backend.Services
                     throw ex;
                 }
             }
+        }
+
+        // Create an method which will return file by id
+        public async Task<FileModelDto> GetFileByIdAsync(int fileId)
+        {
+            var userId = _userContextService.GetUserId;
+
+            if (userId == null)
+            {
+                throw new UnauthorizedAccessException("User is not authenticated");
+            }
+
+            var file = await _dbContext.Files
+                .Where(f => f.OwnerId == userId && f.Id == fileId)
+                .Select(f => new FileModelDto
+                {
+                    Id = f.Id,
+                    Name = f.Name,
+                    Path = f.Path,
+                    UploadedAt = f.UploadedAt
+                })
+                .FirstOrDefaultAsync();
+
+            if (file == null)
+            {
+                throw new Exception("File not found");
+            }
+
+            return file;
+        }
+
+        // Create an method which will return file stream by id and set the content type that is what the file is
+        public async Task<FileStream> DownloadFileAsync(int fileId)
+        {
+            var userId = _userContextService.GetUserId;
+
+            if (userId == null)
+            {
+                throw new UnauthorizedAccessException("User is not authenticated");
+            }
+
+            var file = await _dbContext.Files
+                .Where(f => f.OwnerId == userId && f.Id == fileId)
+                .FirstOrDefaultAsync();
+
+            if (file == null)
+            {
+                throw new Exception("File not found");
+            }
+
+            var stream = new FileStream(file.Path, FileMode.Open);
+            return stream;
         }
         
         
