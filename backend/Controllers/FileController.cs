@@ -53,8 +53,19 @@ namespace backend.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllFiles()
         {
-            var files = await _fileService.GetAllFilesAsync();
-            return Ok(files);
+            try
+            {
+                var files = await _fileService.GetAllFilesAsync();
+                return Ok(files);
+            } catch(UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         [HttpDelete("{fileId}")]

@@ -25,13 +25,11 @@ namespace backend.Services
 
         public async Task<string[]> UploadFilesAsync(IFormFile[] files)
         {
-            // 1. Check if files are not empty
             if (files == null || files.Length == 0)
             {
                 throw new Exception("Files are empty");
             }
 
-            // 2. Check if user is authenticated
             var userId = _userContextService.GetUserId;
 
             if (userId == null)
@@ -43,7 +41,6 @@ namespace backend.Services
 
             foreach (var file in files)
             {
-                // 3. Create a new file entity
                 var fileEntity = new backend.Entities.File
                 {
                     Name = file.FileName,
@@ -51,17 +48,14 @@ namespace backend.Services
                     UploadedAt = DateTime.UtcNow
                 };
 
-                // 4. Generate unique file name
                 var filePath = Guid.NewGuid().ToString() + "_" + file.FileName;
                 var path = Path.Combine(Directory.GetCurrentDirectory(), "Files", filePath);
 
-                // 5. Save the file to disk
                 using (var stream = new FileStream(path, FileMode.Create))
                 {
                     await file.CopyToAsync(stream);
                 }
 
-                // 6. Save the file path to the database
                 fileEntity.Path = path;
                 _dbContext.Files.Add(fileEntity);
                 await _dbContext.SaveChangesAsync();
@@ -73,13 +67,11 @@ namespace backend.Services
 
         public async Task<string> UploadFileAsync(IFormFile file)
         {
-            // 1. Check if file is not empty
             if (file == null || file.Length == 0)
             {
                 throw new Exception("File is empty");
             }
 
-            // 2. Check if user is authenticated
             var userId = _userContextService.GetUserId;
 
             if (userId == null)
@@ -87,7 +79,6 @@ namespace backend.Services
                 throw new UnauthorizedAccessException("User is not authenticated");
             }
 
-            // 3. Create a new file entity
             var fileEntity = new backend.Entities.File
             {
                 Name = file.FileName,
@@ -95,17 +86,14 @@ namespace backend.Services
                 UploadedAt = DateTime.UtcNow
             };
 
-            // 4. Generate unique file name
             var filePath = Guid.NewGuid().ToString() + "_" + file.FileName;
             var path = Path.Combine(Directory.GetCurrentDirectory(), "Files", filePath);
 
-            // 5. Save the file to disk
             using (var stream = new FileStream(path, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
             }
 
-            // 6. Save the file path to the database
             fileEntity.Path = path;
             _dbContext.Files.Add(fileEntity);
             await _dbContext.SaveChangesAsync();
@@ -136,7 +124,7 @@ namespace backend.Services
             return files;
         }
         
-        // Delete file by id
+        // Delete file by id with using transaction
         public async Task DeleteFileAsync(int fileId)
         {
             var userId = _userContextService.GetUserId;
@@ -155,9 +143,23 @@ namespace backend.Services
                 throw new Exception("File not found");
             }
 
-            _dbContext.Files.Remove(file);
-            await _dbContext.SaveChangesAsync();
+            using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    _dbContext.Files.Remove(file);
+                    await _dbContext.SaveChangesAsync();
+                    System.IO.File.Delete(file.Path);
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    throw ex;
+                }
+            }
         }
-
+        
+        
     }
 }
