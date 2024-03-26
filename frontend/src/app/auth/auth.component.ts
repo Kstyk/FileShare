@@ -23,9 +23,11 @@ export class AuthComponent implements OnDestroy, OnInit {
 
   ngOnInit(): void {
     this.initForm();
+    // How can i change that? I cannot login or register in the app when authstate is undefineed
 
     this.storeSub = this.store.select(selectAuth).subscribe((authState) => {
-      this.error = authState.authError;
+      console.log(authState);
+      this.error = authState ? authState.authError : null;
     });
   }
 

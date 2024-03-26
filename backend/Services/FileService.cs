@@ -60,5 +60,30 @@ namespace backend.Services
             return filePath;
         }
 
+        // Create an method which will return all files of logged user
+        public async Task<IEnumerable<FileModel>> GetAllFilesAsync()
+        {
+            var userId = _userContextService.GetUserId;
+
+            if (userId == null)
+            {
+                throw new UnauthorizedAccessException("User is not authenticated");
+            }
+
+            var files = await _dbContext.Files
+                .Where(file => file.OwnerId == userId)
+                .Select(file => new FileModel
+                {
+                    Id = file.Id,
+                    Name = file.Name,
+                    UploadedAt = file.UploadedAt
+                })
+                .ToListAsync();
+
+            return files;
+        }
+
+
+
     }
 }

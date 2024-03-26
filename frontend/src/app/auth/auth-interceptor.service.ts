@@ -22,7 +22,7 @@ export class AuthInterceptorService implements HttpInterceptor {
     return this.store.select(selectAuth).pipe(
       take(1),
       map((authState) => {
-        return authState.user;
+        return authState.user ? authState.user : null;
       }),
       exhaustMap((user) => {
         if (!user) {
