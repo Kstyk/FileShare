@@ -11,6 +11,7 @@ import { appReducer } from './store/app.reducer';
 import { CoreModule } from './core.module';
 import { AuthEffects } from './auth/store/auth.effects';
 import { HttpClientModule } from '@angular/common/http';
+import { FilesEffects } from './files/store/files.effects';
 
 @NgModule({
   declarations: [AppComponent, HeaderComponent],
@@ -20,7 +21,7 @@ import { HttpClientModule } from '@angular/common/http';
     AppRoutingModule,
     CoreModule,
     StoreModule.forRoot(appReducer),
-    EffectsModule.forRoot([AuthEffects]),
+    EffectsModule.forRoot([AuthEffects, FilesEffects]),
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -14,15 +14,34 @@ namespace backend.Controllers
         }
 
 
-        
 
-        [HttpPost("upload")]
-        public async Task<IActionResult> UploadFile([FromForm] IFormFile File)
+
+        //[HttpPost("upload")]
+        //public async Task<IActionResult> UploadFile([FromForm] IFormFile file)
+        //{
+        //    try
+        //    {
+        //        var filePath = await _fileService.UploadFileAsync(file);
+        //        return Ok(filePath);
+        //    }
+        //    catch (UnauthorizedAccessException ex)
+        //    {
+        //        return Unauthorized(ex.Message);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+
+        //}
+
+        [HttpPost("upload-multiple")]
+        public async Task<IActionResult> UploadFiles([FromForm] IFormFile[] files)
         {
             try
             {
-                var filePath = await _fileService.UploadFileAsync(File);
-                return Ok(filePath);
+                var filePaths = await _fileService.UploadFilesAsync(files);
+                return Ok(filePaths);
             }
             catch (UnauthorizedAccessException ex)
             {
@@ -32,7 +51,6 @@ namespace backend.Controllers
             {
                 return BadRequest(ex.Message);
             }
-
         }
     }
 }
