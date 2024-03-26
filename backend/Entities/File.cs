@@ -9,5 +9,6 @@
         public User Owner { get; set; }
         public DateTime UploadedAt { get; set; }
         public int Downloads { get; set; } = 0;
+        public bool IsPublic { get; set; } = false;
     }
 }
