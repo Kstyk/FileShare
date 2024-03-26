@@ -86,6 +86,24 @@ namespace backend.Controllers
             }
         }
 
+        [HttpDelete]
+        public async Task<IActionResult> DeleteFiles([FromQuery] int[] fileIds)
+        {
+            try
+            {
+                await _fileService.DeleteFilesAsync(fileIds);
+                return Ok();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet("{fileId}")]
         public async Task<IActionResult> GetFile(int fileId)
         {

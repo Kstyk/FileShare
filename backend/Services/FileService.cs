@@ -13,6 +13,7 @@ namespace backend.Services
         Task DeleteFileAsync(int fileId);
         Task<FileModelDto> GetFileByIdAsync(int fileId);
         Task<FileStream> DownloadFileAsync(int fileId);
+        Task DeleteFilesAsync(int[] fileIds);
     }
 
     public class FileService : IFileService
@@ -152,6 +153,47 @@ namespace backend.Services
                     _dbContext.Files.Remove(file);
                     await _dbContext.SaveChangesAsync();
                     System.IO.File.Delete(file.Path);
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    throw ex;
+                }
+            }
+        }
+
+        // Delete few files by ids with using transaction
+        public async Task DeleteFilesAsync(int[] fileIds)
+        {
+            var userId = _userContextService.GetUserId;
+
+            if (userId == null)
+            {
+                throw new UnauthorizedAccessException("User is not authenticated");
+            }
+
+            var files = await _dbContext.Files
+                .Where(f => f.OwnerId == userId && fileIds.Contains(f.Id))
+                .ToListAsync();
+
+            if (files == null || files.Count == 0)
+            {
+                throw new Exception("Files not found");
+            }
+
+            using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    _dbContext.Files.RemoveRange(files);
+                    await _dbContext.SaveChangesAsync();
+
+                    foreach (var file in files)
+                    {
+                        System.IO.File.Delete(file.Path);
+                    }
+
                     await transaction.CommitAsync();
                 }
                 catch (Exception ex)
