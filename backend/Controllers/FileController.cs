@@ -1,5 +1,6 @@
 ﻿using backend.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.IO.Compression;
 
 namespace backend.Controllers
 {
@@ -135,6 +136,58 @@ namespace backend.Controllers
                 }
                 memory.Position = 0;
                 return File(memory, "application/octet-stream", file.Name);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("download-multiple")]
+        public async Task<IActionResult> DownloadFiles([FromQuery] int[] fileIds)
+        {
+            try
+            {
+                var memory = new MemoryStream();
+                using (var zipArchive = new ZipArchive(memory, ZipArchiveMode.Create, true))
+                {
+                    foreach (var fileId in fileIds)
+                    {
+                        var file = await _fileService.GetFileByIdAsync(fileId);
+                        var entry = zipArchive.CreateEntry(file.Name);
+                        using (var entryStream = entry.Open())
+                        {
+                            using (var stream = new FileStream(file.Path, FileMode.Open))
+                            {
+                                await stream.CopyToAsync(entryStream);
+                            }
+                        }
+                    }
+                }
+                memory.Position = 0;
+                return File(memory, "application/octet-stream", "files.zip");
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("update-public/{fileId}")]
+        public async Task<IActionResult> UpdateFilePublic(int fileId, [FromQuery] bool isPublic)
+        {
+            try
+            {
+                var file = await _fileService.ChangeFilePublicAsync(fileId, isPublic);
+                return Ok(file);
             }
             catch (UnauthorizedAccessException ex)
             {

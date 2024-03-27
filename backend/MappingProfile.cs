@@ -8,6 +8,7 @@ namespace backend
     {
         public MappingProfile() {
             CreateMap<RegisterUserDto, User>();
+            CreateMap<backend.Entities.File, FileModelDto>();
         }
 
 
