@@ -4,7 +4,7 @@ import { Subscription, map } from 'rxjs';
 import { AppStateType } from '../store/app.reducer';
 import { selectAuth } from '../auth/store/auth.selector';
 import { logout } from '../auth/store/auth.actions';
-import { User } from '../../models/user.model';
+import { User } from '../auth/models/user.model';
 
 @Component({
   selector: 'app-header',

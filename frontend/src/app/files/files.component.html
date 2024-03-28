@@ -1,1 +1,29 @@
-<p class="text-blue-600 underline">files works!</p>
+<div class="container w-11/12 sm:w-8/12 mx-auto mt-5 bg-white p-5 shadow-md">
+  <div class="overflow-x-auto">
+    <table class="table table-xs">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Name</th>
+          <th>Uploaded At</th>
+          <th>Downloads</th>
+          <th>Download</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (file of userFiles; track $index) {
+
+        <tr [routerLink]="['/files', file.id]">
+          <th>1</th>
+          <td>{{ file.name }}</td>
+          <td>{{ file.uploadedAt }}</td>
+          <td>{{ file.downloads }}</td>
+          <td><button class="btn btn-primary">download</button></td>
+          <td><button class="btn btn-warning">delete</button></td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,5 +1,5 @@
 import { catchError, map, of, switchMap, tap } from 'rxjs';
-import { User } from '../../../models/user.model';
+import { User } from '../models/user.model';
 import {
   authenticateFail,
   authenticatesuccess,

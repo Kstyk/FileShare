@@ -25,11 +25,11 @@ export class UploadFileComponent implements OnInit {
       this.filesArray &&
       this.filesArray.length > 0
     ) {
-      const fileToUpload = this.filesArray[0];
       // Perform any additional validation or processing if needed
 
       // Dispatch the uploadStart action with the file payload
-      this.store.dispatch(uploadStart({ payload: { file: fileToUpload } }));
+      const copyArray = Object.assign([], this.filesArray);
+      this.store.dispatch(uploadStart({ payload: { files: copyArray } }));
     }
   }
 

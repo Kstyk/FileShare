@@ -1,8 +1,15 @@
 import { createReducer, on } from '@ngrx/store';
-import { uploadComplete, uploadFail, uploadStart } from './files.actions';
+import {
+  actionFail,
+  getFilesComplete,
+  getFilesStart,
+  uploadComplete,
+  uploadStart,
+} from './files.actions';
+import { FileModel } from '../models/file.model';
 
 export type filesStateType = {
-  files: File[];
+  files: FileModel[];
   loading: boolean;
   error: string;
 };
@@ -18,10 +25,27 @@ export const filesReducer = createReducer(
   on(uploadStart, (state) => {
     return { ...state, loading: true, error: null };
   }),
-  on(uploadFail, (state, action) => {
+  on(actionFail, (state, action) => {
     return { ...state, loading: false, error: action.payload.error };
   }),
-  on(uploadComplete, (state) => {
-    return { ...state, loading: false, error: null };
+  on(uploadComplete, (state, action) => {
+    return {
+      ...state,
+      loading: false,
+      error: null,
+      files: action.payload.files,
+    };
+  }),
+  on(getFilesStart, (state) => {
+    return { ...state, loading: true, error: null };
+  }),
+
+  on(getFilesComplete, (state, action) => {
+    return {
+      ...state,
+      loading: false,
+      error: null,
+      files: action.payload.files,
+    };
   })
 );

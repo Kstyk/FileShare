@@ -2,15 +2,22 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { uploadComplete, uploadFail, uploadStart } from './files.actions';
+import {
+  actionFail,
+  getFilesComplete,
+  getFilesStart,
+  uploadComplete,
+  uploadStart,
+} from './files.actions';
 import { catchError, map, of, pipe, switchMap, tap } from 'rxjs';
+import { FileModel } from '../models/file.model';
 
-const uploadFileHandleError = (errorRes: any) => {
+const handleError = (errorRes: any) => {
   let errorMessage = 'An unknown error occurred!';
 
   if (!errorRes.error && !errorRes.error.error) {
     return of(
-      uploadFail({
+      actionFail({
         payload: { error: errorMessage },
       })
     );
@@ -26,7 +33,7 @@ const uploadFileHandleError = (errorRes: any) => {
   }
 
   return of(
-    uploadFail({
+    actionFail({
       payload: { error: errorMessage },
     })
   );
@@ -45,19 +52,43 @@ export class FilesEffects {
       ofType(uploadStart),
       switchMap((uploadData) => {
         var fd = new FormData();
-        fd.append('file', uploadData.payload.file);
+
+        uploadData.payload.files.forEach((file: File) => {
+          fd.append('files', file);
+        });
+
         return this.http
-          .post('https://localhost:7041/api/file/upload', fd, {
-            responseType: 'text',
+          .post('https://localhost:7041/api/files/upload-multiple', fd, {
+            responseType: 'json',
           })
           .pipe(
-            map((resData) => {
-              return uploadComplete();
+            map((resData: FileModel[]) => {
+              return uploadComplete({
+                payload: { files: resData },
+              });
             }),
             catchError((errorRes) => {
-              return of(uploadFail({ payload: { error: errorRes } }));
+              return handleError(errorRes);
             })
           );
+      })
+    )
+  );
+
+  getFilesStart = createEffect(() =>
+    this.actions$.pipe(
+      ofType(getFilesStart),
+      switchMap(() => {
+        return this.http.get('https://localhost:7041/api/files').pipe(
+          map((resData: FileModel[]) => {
+            return getFilesComplete({
+              payload: { files: resData },
+            });
+          }),
+          catchError((errorRes) => {
+            return handleError(errorRes);
+          })
+        );
       })
     )
   );

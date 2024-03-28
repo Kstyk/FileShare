@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { User } from '../../../models/user.model';
+import { User } from '../models/user.model';
 import {
   authenticateFail,
   authenticatesuccess,
@@ -9,7 +9,7 @@ import {
   refreshToken,
   signupStart,
 } from './auth.actions';
-import { RegisterValidationError } from '../../../models/register-validation-errors.model';
+import { RegisterValidationError } from '../models/register-validation-errors.model';
 
 export type authStateType = {
   user: User; // user can be null

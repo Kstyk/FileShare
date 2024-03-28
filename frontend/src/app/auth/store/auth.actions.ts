@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { RegisterValidationError } from '../../../models/register-validation-errors.model';
+import { RegisterValidationError } from '../models/register-validation-errors.model';
 
 export const LOGIN_START = '[Auth] Login Start';
 export const AUTHENTICATE_SUCCESS = '[Auth] Login';

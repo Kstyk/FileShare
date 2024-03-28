@@ -5,9 +5,10 @@ import { FilesRoutingModule } from './files-routing.module';
 import { UploadFileComponent } from './upload-file/upload-file.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { FileDetailComponent } from './file-detail/file-detail.component';
 
 @NgModule({
-  declarations: [FilesComponent, UploadFileComponent],
+  declarations: [FilesComponent, UploadFileComponent, FileDetailComponent],
   providers: [],
   imports: [
     RouterModule,

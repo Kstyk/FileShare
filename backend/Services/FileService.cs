@@ -10,7 +10,7 @@ namespace backend.Services
     public interface IFileService
     {
         Task<string> UploadFileAsync(IFormFile file);
-        Task<string[]> UploadFilesAsync(IFormFile[] files);
+        Task<ICollection<FileModelDto>> UploadFilesAsync(IFormFile[] files);
         Task<IEnumerable<FileModelDto>> GetAllFilesAsync();
         Task DeleteFileAsync(int fileId);
         Task<FileModelDto> GetFileByIdAsync(int fileId);
@@ -32,7 +32,7 @@ namespace backend.Services
             _mapper = mapper;
         }
 
-        public async Task<string[]> UploadFilesAsync(IFormFile[] files)
+        public async Task<ICollection<FileModelDto>> UploadFilesAsync(IFormFile[] files)
         {
             if (files == null || files.Length == 0)
             {
@@ -71,7 +71,12 @@ namespace backend.Services
                 filePaths.Add(filePath);
             }
 
-            return filePaths.ToArray();
+            // Return array of users files in database by userId and map them to FileModelDto
+            var allFiles = await _dbContext.Files
+                .Where(f => f.OwnerId == userId)
+                .Select(f => _mapper.Map<FileModelDto>(f))
+                .ToListAsync();
+            return allFiles;
         }
 
         public async Task<string> UploadFileAsync(IFormFile file)
